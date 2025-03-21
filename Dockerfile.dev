@@ -11,6 +11,7 @@ RUN apt-get update -qq && \
     pkg-config \
     curl \
     vim \
+    watchman \
     && rm -rf /var/lib/apt/lists/* /var/cache/apt/archives
 
 # Set working directory

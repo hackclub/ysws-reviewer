@@ -1,12 +1,5 @@
-<div class="max-w-md w-full bg-white shadow-lg rounded-lg p-8">
-  <div class="text-center">
-    <h1 class="text-2xl font-bold mb-8">YSWS Reviewer</h1>
-    
-    <%= link_to "/auth/slack", class: "inline-flex items-center justify-center w-full px-4 py-2 text-base font-medium text-white bg-[#4A154B] hover:bg-[#3c1039] rounded-lg shadow-sm" do %>
-      <svg class="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="currentColor">
-        <path d="M6 15a2 2 0 1 1 0-4 2 2 0 0 1 0 4zm0-6a2 2 0 1 1 0-4 2 2 0 0 1 0 4zm6 6a2 2 0 1 1 0-4 2 2 0 0 1 0 4zm0-6a2 2 0 1 1 0-4 2 2 0 0 1 0 4zm6 6a2 2 0 1 1 0-4 2 2 0 0 1 0 4zm0-6a2 2 0 1 1 0-4 2 2 0 0 1 0 4z"/>
-      </svg>
-      Sign in with Slack
-    <% end %>
-  </div>
-</div> 
+<div class="min-h-screen flex items-center justify-center">
+  <%= link_to "/auth/slack", class: "block" do %>
+    <img alt="Sign in with Slack" height="40" width="172" src="https://platform.slack-edge.com/img/sign_in_with_slack.png" srcSet="https://platform.slack-edge.com/img/sign_in_with_slack.png 1x, https://platform.slack-edge.com/img/sign_in_with_slack@2x.png 2x"/>
+  <% end %>
+</div>
