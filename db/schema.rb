@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_03_21_210916) do
+ActiveRecord::Schema[8.0].define(version: 2025_03_22_130904) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -109,5 +109,47 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_21_210916) do
     t.index ["priority", "scheduled_at"], name: "index_good_jobs_on_priority_scheduled_at_unfinished_unlocked", where: "((finished_at IS NULL) AND (locked_by_id IS NULL))"
     t.index ["queue_name", "scheduled_at"], name: "index_good_jobs_on_queue_name_and_scheduled_at", where: "(finished_at IS NULL)"
     t.index ["scheduled_at"], name: "index_good_jobs_on_scheduled_at", where: "(finished_at IS NULL)"
+  end
+
+  create_table "ysws_approved_projects", primary_key: "airtable_id", id: :string, force: :cascade do |t|
+    t.string "email"
+    t.string "referral_reason"
+    t.text "heard_about"
+    t.text "doing_well_feedback"
+    t.text "improvement_feedback"
+    t.string "age_when_approved"
+    t.string "playable_url"
+    t.string "code_url"
+    t.text "description"
+    t.string "github_username"
+    t.string "address_line1"
+    t.string "address_line2"
+    t.string "city"
+    t.string "state_province"
+    t.string "country"
+    t.string "postal_code"
+    t.date "birthday"
+    t.decimal "hours_spent", precision: 5, scale: 1
+    t.decimal "override_hours_spent", precision: 5, scale: 1
+    t.text "override_hours_spent_justification"
+    t.decimal "weighted_project_contribution", precision: 5, scale: 1
+    t.datetime "approved_at"
+    t.string "first_name"
+    t.string "last_name"
+    t.decimal "weighted_project_contribution_per_author", precision: 5, scale: 1
+    t.string "author_countries"
+    t.string "unique_countries"
+    t.string "archive_live_url"
+    t.string "archive_code_url"
+    t.datetime "archive_archived_at"
+    t.boolean "archive_trigger_rearchive"
+    t.boolean "archive_trigger_rearchive2"
+    t.string "hack_clubber_geocoded_country"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["approved_at"], name: "index_ysws_approved_projects_on_approved_at"
+    t.index ["email"], name: "index_ysws_approved_projects_on_email"
+    t.index ["first_name", "last_name"], name: "index_ysws_approved_projects_on_first_name_and_last_name"
+    t.index ["github_username"], name: "index_ysws_approved_projects_on_github_username"
   end
 end

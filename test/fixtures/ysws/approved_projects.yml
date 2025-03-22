@@ -1,0 +1,15 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  airtable_id: MyString
+  name: MyString
+  description: MyText
+  status: MyString
+  approved_at: 2025-03-22 13:09:04
+
+two:
+  airtable_id: MyString
+  name: MyString
+  description: MyText
+  status: MyString
+  approved_at: 2025-03-22 13:09:04
