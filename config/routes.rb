@@ -17,6 +17,14 @@ Rails.application.routes.draw do
   # Protected routes
   get "/home", to: "home#index", as: :authenticated_root
   
+  # Mount GoodJob dashboard with authentication
+  constraints lambda { |request|
+    user_slack_id = request.session[:user_slack_id]
+    user_slack_id.present? && AuthorizedUser.exists?(slack_user_id: user_slack_id)
+  } do
+    mount GoodJob::Engine => "/good_job"
+  end
+
   # Root route - will be handled by ApplicationController#authenticate_user!
   root "sessions#new"
 end

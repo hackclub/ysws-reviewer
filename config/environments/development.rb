@@ -28,6 +28,10 @@ Rails.application.configure do
   # Change to :null_store to avoid any caching.
   config.cache_store = :memory_store
 
+  # Configure GoodJob to run in async_server mode
+  config.good_job.execution_mode = :async_server
+  config.good_job.enable_cron = true
+
   # Store uploaded files on the local file system (see config/storage.yml for options).
   config.active_storage.service = :local
 
