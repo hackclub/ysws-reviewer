@@ -1,0 +1,164 @@
+<div class="min-h-screen bg-gray-100 py-8">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="bg-white rounded-lg shadow px-6 py-8">
+      <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-900 mb-2">Review YSWS Project</h1>
+        <div class="space-y-1">
+          <p class="text-gray-600">Reviewing project by <%= @approved_project.first_name %> <%= @approved_project.last_name %></p>
+          <% if @approved_project.ysws_program %>
+            <p class="text-sm">
+              <span class="text-gray-500">Program:</span>
+              <span class="text-indigo-600 font-medium"><%= @approved_project.ysws_program.name %></span>
+              <% if @approved_project.ysws_program.average_hours_per_grant %>
+                <span class="text-gray-500 ml-2">(avg. <%= @approved_project.ysws_program.average_hours_per_grant %> hours per grant)</span>
+              <% end %>
+            </p>
+          <% end %>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <!-- Basic Information -->
+        <div class="space-y-6">
+          <h2 class="text-xl font-semibold text-gray-900 border-b pb-2">Basic Information</h2>
+          
+          <div>
+            <h3 class="text-sm font-medium text-gray-500">Name</h3>
+            <p class="mt-1 text-gray-900"><%= @approved_project.first_name %> <%= @approved_project.last_name %></p>
+          </div>
+
+          <div>
+            <h3 class="text-sm font-medium text-gray-500">Email</h3>
+            <p class="mt-1 text-gray-900"><%= @approved_project.email %></p>
+          </div>
+
+          <div>
+            <h3 class="text-sm font-medium text-gray-500">GitHub Username</h3>
+            <p class="mt-1 text-gray-900"><%= @approved_project.github_username %></p>
+          </div>
+
+          <div>
+            <h3 class="text-sm font-medium text-gray-500">Age When Approved</h3>
+            <p class="mt-1 text-gray-900"><%= @approved_project.age_when_approved %></p>
+          </div>
+
+          <div>
+            <h3 class="text-sm font-medium text-gray-500">Birthday</h3>
+            <p class="mt-1 text-gray-900"><%= @approved_project.birthday&.strftime("%B %d, %Y") %></p>
+          </div>
+        </div>
+
+        <!-- Project Details -->
+        <div class="space-y-6">
+          <h2 class="text-xl font-semibold text-gray-900 border-b pb-2">Project Details</h2>
+          
+          <div>
+            <h3 class="text-sm font-medium text-gray-500">Description</h3>
+            <p class="mt-1 text-gray-900"><%= @approved_project.description %></p>
+          </div>
+
+          <div>
+            <h3 class="text-sm font-medium text-gray-500">Hours Spent</h3>
+            <p class="mt-1 text-gray-900"><%= @approved_project.hours_spent %></p>
+          </div>
+
+          <div>
+            <h3 class="text-sm font-medium text-gray-500">Project URLs</h3>
+            <div class="mt-1 space-y-1">
+              <% if @approved_project.playable_url.present? %>
+                <a href="<%= @approved_project.playable_url %>" target="_blank" class="text-indigo-600 hover:text-indigo-900">Playable URL</a>
+              <% end %>
+              <% if @approved_project.code_url.present? %>
+                <a href="<%= @approved_project.code_url %>" target="_blank" class="block text-indigo-600 hover:text-indigo-900">Code URL</a>
+              <% end %>
+            </div>
+          </div>
+
+          <div>
+            <h3 class="text-sm font-medium text-gray-500">Weighted Project Contribution</h3>
+            <p class="mt-1 text-gray-900"><%= @approved_project.weighted_project_contribution %></p>
+          </div>
+        </div>
+
+        <!-- Feedback -->
+        <div class="space-y-6 md:col-span-2">
+          <h2 class="text-xl font-semibold text-gray-900 border-b pb-2">Feedback & Additional Information</h2>
+          
+          <div>
+            <h3 class="text-sm font-medium text-gray-500">How did you hear about this?</h3>
+            <p class="mt-1 text-gray-900"><%= @approved_project.heard_about %></p>
+          </div>
+
+          <div>
+            <h3 class="text-sm font-medium text-gray-500">What are we doing well?</h3>
+            <p class="mt-1 text-gray-900"><%= @approved_project.doing_well_feedback %></p>
+          </div>
+
+          <div>
+            <h3 class="text-sm font-medium text-gray-500">How can we improve?</h3>
+            <p class="mt-1 text-gray-900"><%= @approved_project.improvement_feedback %></p>
+          </div>
+        </div>
+
+        <!-- Location Information -->
+        <div class="space-y-6 md:col-span-2">
+          <h2 class="text-xl font-semibold text-gray-900 border-b pb-2">Location Information</h2>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <h3 class="text-sm font-medium text-gray-500">Address</h3>
+              <div class="mt-1 space-y-1 text-gray-900">
+                <p><%= @approved_project.address_line1 %></p>
+                <% if @approved_project.address_line2.present? %>
+                  <p><%= @approved_project.address_line2 %></p>
+                <% end %>
+                <p>
+                  <%= @approved_project.city %>, 
+                  <%= @approved_project.state_province %>
+                  <%= @approved_project.postal_code %>
+                </p>
+                <p><%= @approved_project.country %></p>
+              </div>
+            </div>
+
+            <div>
+              <h3 class="text-sm font-medium text-gray-500">Geographic Information</h3>
+              <div class="mt-1 space-y-1 text-gray-900">
+                <p><strong>Author Countries:</strong> <%= @approved_project.author_countries %></p>
+                <p><strong>Unique Countries:</strong> <%= @approved_project.unique_countries %></p>
+                <p><strong>Geocoded Country:</strong> <%= @approved_project.hack_clubber_geocoded_country %></p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Archive Information -->
+        <div class="space-y-6 md:col-span-2">
+          <h2 class="text-xl font-semibold text-gray-900 border-b pb-2">Archive Information</h2>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <h3 class="text-sm font-medium text-gray-500">Archive URLs</h3>
+              <div class="mt-1 space-y-1">
+                <% if @approved_project.archive_live_url.present? %>
+                  <a href="<%= @approved_project.archive_live_url %>" target="_blank" class="text-indigo-600 hover:text-indigo-900">Archived Live URL</a>
+                <% end %>
+                <% if @approved_project.archive_code_url.present? %>
+                  <a href="<%= @approved_project.archive_code_url %>" target="_blank" class="block text-indigo-600 hover:text-indigo-900">Archived Code URL</a>
+                <% end %>
+              </div>
+            </div>
+
+            <div>
+              <h3 class="text-sm font-medium text-gray-500">Archive Status</h3>
+              <div class="mt-1 space-y-1 text-gray-900">
+                <p><strong>Archived At:</strong> <%= @approved_project.archive_archived_at&.strftime("%B %d, %Y") %></p>
+                <p><strong>Needs Rearchive:</strong> <%= @approved_project.archive_trigger_rearchive ? "Yes" : "No" %></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

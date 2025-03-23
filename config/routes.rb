@@ -1,4 +1,7 @@
 Rails.application.routes.draw do
+  namespace :ysws do
+    get "reviews/new"
+  end
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
@@ -29,6 +32,10 @@ Rails.application.routes.draw do
       post '/reload', to: 'reloads#create'
       get '/reload_status', to: 'reloads#status'
       resource :reload, only: [:show, :create]
+      
+      resources :approved_projects, only: [] do
+        resources :reviews, only: [:new]
+      end
     end
   end
 
