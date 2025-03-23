@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_03_22_130904) do
+ActiveRecord::Schema[8.0].define(version: 2025_03_23_011051) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -147,9 +147,23 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_22_130904) do
     t.string "hack_clubber_geocoded_country"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "ysws_program_id"
     t.index ["approved_at"], name: "index_ysws_approved_projects_on_approved_at"
     t.index ["email"], name: "index_ysws_approved_projects_on_email"
     t.index ["first_name", "last_name"], name: "index_ysws_approved_projects_on_first_name_and_last_name"
     t.index ["github_username"], name: "index_ysws_approved_projects_on_github_username"
+    t.index ["ysws_program_id"], name: "index_ysws_approved_projects_on_ysws_program_id"
   end
+
+  create_table "ysws_programs", primary_key: "airtable_id", id: :string, force: :cascade do |t|
+    t.string "name"
+    t.decimal "average_hours_per_grant", precision: 10, scale: 1
+    t.decimal "nps_score", precision: 5, scale: 2
+    t.integer "nps_median_estimated_hours"
+    t.string "icon_cdn_link"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  add_foreign_key "ysws_approved_projects", "ysws_programs", primary_key: "airtable_id"
 end
