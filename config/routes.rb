@@ -28,6 +28,7 @@ Rails.application.routes.draw do
     namespace :ysws do
       post '/reload', to: 'reloads#create'
       get '/reload_status', to: 'reloads#status'
+      resource :reload, only: [:show, :create]
     end
   end
 

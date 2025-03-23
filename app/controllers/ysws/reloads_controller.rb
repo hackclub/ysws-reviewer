@@ -2,9 +2,13 @@ module Ysws
   class ReloadsController < ApplicationController
     before_action :authenticate_user!
 
+    def show
+      render turbo_stream: turbo_stream.update("reload-button-frame", partial: 'ysws/reload_button')
+    end
+
     def create
-      job = Ysws::ImportApprovedProjectsJob.perform_later
-      render json: { job_id: job.provider_job_id }
+      Ysws::ImportApprovedProjectsJob.perform_later
+      render turbo_stream: turbo_stream.update("reload-button-frame", partial: 'ysws/reload_button')
     end
 
     def status
