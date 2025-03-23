@@ -25,8 +25,5 @@ class HomeController < ApplicationController
       .where(job_class: ['Ysws::ImportApprovedProjectsJob', 'Ysws::ImportProgramsJob'])
       .where.not(finished_at: nil)
       .average("EXTRACT(epoch FROM finished_at - created_at)")
-      
-    # Get a random project for review
-    @random_project = Ysws::ApprovedProject.order('RANDOM()').first
   end
 end 

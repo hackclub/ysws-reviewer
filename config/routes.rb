@@ -33,6 +33,7 @@ Rails.application.routes.draw do
       get '/reload_status', to: 'reloads#status'
       resource :reload, only: [:show, :create]
       
+      get 'projects/reviews/new_random', to: 'reviews#new_random', as: :new_random_review
       resources :approved_projects, only: [] do
         resources :reviews, only: [:new]
       end
