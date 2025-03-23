@@ -44,13 +44,18 @@ module ApplicationHelper
     html.html_safe
   end
 
-  def preview_text(text, words: 50)
+  def preview_text(text, words: nil, chars: nil)
     return '' if text.blank?
     
-    # Split into words and take first n words
-    preview = text.split(/\s+/).take(words).join(' ')
-    # Add ellipsis if text was truncated
-    preview += '...' if text.split(/\s+/).length > words
-    preview
+    if chars
+      truncated = text.truncate(chars, separator: ' ', omission: '...')
+      truncated
+    else
+      # Split into words and take first n words
+      preview = text.split(/\s+/).take(words).join(' ')
+      # Add ellipsis if text was truncated
+      preview += '...' if text.split(/\s+/).length > words
+      preview
+    end
   end
 end

@@ -1,178 +1,239 @@
-<div class="min-h-screen bg-gray-100 py-8">
-  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="bg-white rounded-lg shadow px-6 py-8">
-      <!-- Header -->
-      <div class="mb-8">
-        <h1 class="text-4xl font-bold text-gray-900">
-          <%= @approved_project.hours_spent %> hours - <%= @approved_project.first_name %> <%= @approved_project.last_name %>
-        </h1>
-        <% if @approved_project.ysws_program %>
-          <p class="text-xl text-gray-600 mt-2">
-            <%= @approved_project.ysws_program.name %>
-          </p>
-        <% end %>
-      </div>
+<div class="min-h-screen bg-gray-100">
+  <!-- Random Review Button -->
+  <div class="fixed top-4 right-4 sm:right-6 lg:right-8 z-10">
+    <%= link_to ysws_new_random_review_path, class: "inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2" do %>
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 mr-2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
+      </svg>
+      Start Another Random Review
+    <% end %>
+  </div>
 
-      <!-- Project URLs -->
-      <div class="flex gap-4 mb-8">
-        <% if @approved_project.playable_url.present? %>
-          <a href="<%= @approved_project.playable_url %>" target="_blank" 
-             class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-            View Project
-          </a>
-        <% end %>
-        <% if @approved_project.code_url.present? %>
-          <a href="<%= @approved_project.code_url %>" target="_blank"
-             class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-            View Code
-          </a>
-        <% end %>
-      </div>
-
-      <!-- Description -->
-      <div class="border-b border-gray-200 pb-8 mb-8" data-controller="collapsible">
-        <!-- Preview -->
-        <div data-collapsible-target="preview" class="prose prose-slate prose-img:my-4 max-w-none">
-          <%= markdown(preview_text(@approved_project.description, words: 30)) %>
-          <button data-action="click->collapsible#expand" data-collapsible-target="expandButton" 
-                  class="mt-2 text-sm text-indigo-600 hover:text-indigo-800 font-medium">
-            Show More
-          </button>
-        </div>
-
-        <!-- Full Content -->
-        <div data-collapsible-target="content" class="prose prose-slate prose-img:my-4 max-w-none">
-          <%= markdown(@approved_project.description) %>
-          <button data-action="click->collapsible#collapse" data-collapsible-target="collapseButton"
-                  class="mt-4 text-sm text-indigo-600 hover:text-indigo-800 font-medium">
-            Show Less
-          </button>
-        </div>
-      </div>
-
-      <!-- Project Fields -->
-      <div class="border-b border-gray-200 pb-8 mb-8">
-        <h2 class="text-xl font-semibold mb-4">Project Details</h2>
-        <dl class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <!-- Hours (left) and Weighted Contribution (right) in first row -->
-          <div>
-            <dt class="text-sm font-medium text-gray-500">Hours Spent</dt>
-            <dd class="mt-1 text-sm text-gray-900">
-              <%= @approved_project.hours_spent %>
-              <% if @approved_project.override_hours_spent.present? %>
-                <br><span class="text-amber-600">Overridden: <%= @approved_project.override_hours_spent %></span>
+  <div class="py-8">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="bg-white rounded-lg shadow px-6 py-8">
+        <!-- Header -->
+        <div class="mb-8">
+          <div class="flex justify-between items-start">
+            <div>
+              <h1 class="text-4xl font-bold text-gray-900">
+                <%= @approved_project.hours_spent %> hours - <%= @approved_project.first_name %> <%= @approved_project.last_name %>
+              </h1>
+              <% if @approved_project.ysws_program %>
+                <p class="text-xl text-gray-600 mt-2">
+                  <%= @approved_project.ysws_program.name %>
+                </p>
               <% end %>
-            </dd>
-          </div>
-
-          <div>
-            <dt class="text-sm font-medium text-gray-500">Weighted Contribution</dt>
-            <dd class="mt-1 text-sm text-gray-900"><%= @approved_project.weighted_project_contribution %></dd>
-          </div>
-
-          <!-- Full width override justification if present -->
-          <% if @approved_project.override_hours_spent_justification.present? %>
-            <div class="md:col-span-2 bg-amber-50 p-4 rounded-md">
-              <dt class="text-sm font-medium text-amber-900">Hours Override Justification</dt>
-              <dd class="mt-1 text-sm text-amber-800"><%= @approved_project.override_hours_spent_justification %></dd>
             </div>
+
+            <div data-controller="clipboard" 
+                 data-clipboard-url-value="https://airtable.com/<%= Rails.application.credentials.airtable.ysws.base_id %>/<%= Rails.application.credentials.airtable.ysws.table_id.approved_projects %>/<%= @approved_project.airtable_id %>">
+              <button data-clipboard-target="button"
+                      data-action="clipboard#copy"
+                      class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-3.5 h-3.5 mr-1">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 7.5V6.108c0-1.135.845-2.098 1.976-2.192.373-.03.748-.057 1.123-.08M15.75 18H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08M15.75 18.75v-1.875a3.375 3.375 0 00-3.375-3.375h-1.5a1.125 1.125 0 01-1.125-1.125v-1.5A3.375 3.375 0 006.375 7.5H5.25m11.9-3.664A2.251 2.251 0 0015 2.25h-1.5a2.251 2.251 0 00-2.15 1.586m5.8 0c.065.21.1.433.1.664v.75h-6V4.5c0-.231.035-.454.1-.664M6.75 7.5H4.875c-.621 0-1.125.504-1.125 1.125v12c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V16.5a9 9 0 00-9-9z" />
+                </svg>
+                Copy Airtable URL
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Project URLs -->
+        <div class="flex gap-4 mb-8">
+          <% if @approved_project.playable_url.present? %>
+            <a href="<%= @approved_project.playable_url %>" target="_blank" 
+               class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+              View Project
+            </a>
           <% end %>
+          <% if @approved_project.code_url.present? %>
+            <a href="<%= @approved_project.code_url %>" target="_blank"
+               class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+              View Code
+            </a>
+          <% end %>
+        </div>
 
-          <!-- Rest of the fields -->
-          <div>
-            <dt class="text-sm font-medium text-gray-500">Approved At</dt>
-            <dd class="mt-1 text-sm text-gray-900"><%= @approved_project.approved_at&.strftime("%B %d, %Y") %></dd>
-          </div>
-          <div>
-            <dt class="text-sm font-medium text-gray-500">GitHub Username</dt>
-            <dd class="mt-1 text-sm text-gray-900"><%= @approved_project.github_username %></dd>
-          </div>
-        </dl>
-      </div>
+        <!-- Description -->
+        <% if @approved_project.description.present? %>
+          <div class="border-b border-gray-200 pb-8 mb-8" data-controller="collapsible">
+            <!-- Preview -->
+            <div data-collapsible-target="preview" class="prose prose-slate prose-img:my-4 max-w-none">
+              <%= markdown(preview_text(@approved_project.description, words: 30)) %>
+              <button data-action="click->collapsible#expand" data-collapsible-target="expandButton" 
+                      class="mt-2 text-sm text-indigo-600 hover:text-indigo-800 font-medium">
+                Show More
+              </button>
+            </div>
 
-      <!-- Author Fields -->
-      <div class="border-b border-gray-200 pb-8 mb-8">
-        <h2 class="text-xl font-semibold mb-4">Author Information</h2>
-        <dl class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <dt class="text-sm font-medium text-gray-500">Email</dt>
-            <dd class="mt-1 text-sm text-gray-900"><%= @approved_project.email %></dd>
+            <!-- Full Content -->
+            <div data-collapsible-target="content" class="prose prose-slate prose-img:my-4 max-w-none">
+              <%= markdown(@approved_project.description) %>
+              <button data-action="click->collapsible#collapse" data-collapsible-target="collapseButton"
+                      class="mt-4 text-sm text-indigo-600 hover:text-indigo-800 font-medium">
+                Show Less
+              </button>
+            </div>
           </div>
-          <div>
-            <dt class="text-sm font-medium text-gray-500">Age When Approved</dt>
-            <dd class="mt-1 text-sm text-gray-900"><%= @approved_project.age_when_approved %></dd>
-          </div>
-          <div>
-            <dt class="text-sm font-medium text-gray-500">Location</dt>
-            <dd class="mt-1 text-sm text-gray-900">
-              <%= @approved_project.city %>, 
-              <%= @approved_project.state_province %>,
-              <%= @approved_project.country %>
-            </dd>
-          </div>
-          <div>
-            <dt class="text-sm font-medium text-gray-500">Birthday</dt>
-            <dd class="mt-1 text-sm text-gray-900"><%= @approved_project.birthday&.strftime("%B %d, %Y") %></dd>
-          </div>
-        </dl>
-      </div>
+        <% end %>
 
-      <!-- Feedback -->
-      <div class="border-b border-gray-200 pb-8 mb-8">
-        <h2 class="text-xl font-semibold mb-4">Feedback & Information</h2>
-        <dl class="grid grid-cols-1 gap-6">
-          <% if @approved_project.referral_reason.present? %>
+        <!-- Project Fields -->
+        <div class="border-b border-gray-200 pb-8 mb-8">
+          <h2 class="text-xl font-semibold mb-4">Project Details</h2>
+          <dl class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Hours (left) and Weighted Contribution (right) in first row -->
             <div>
-              <dt class="text-sm font-medium text-gray-500">Referral Reason</dt>
-              <dd class="mt-1 text-sm text-gray-900"><%= @approved_project.referral_reason %></dd>
-            </div>
-          <% end %>
-          
-          <% if @approved_project.heard_about.present? %>
-            <div>
-              <dt class="text-sm font-medium text-gray-500">How did you hear about this?</dt>
-              <dd class="mt-1 text-sm text-gray-900"><%= @approved_project.heard_about %></dd>
-            </div>
-          <% end %>
-
-          <% if @approved_project.doing_well_feedback.present? %>
-            <div>
-              <dt class="text-sm font-medium text-gray-500">What are we doing well?</dt>
-              <dd class="mt-1 text-sm text-gray-900"><%= @approved_project.doing_well_feedback %></dd>
-            </div>
-          <% end %>
-
-          <% if @approved_project.improvement_feedback.present? %>
-            <div>
-              <dt class="text-sm font-medium text-gray-500">How can we improve?</dt>
-              <dd class="mt-1 text-sm text-gray-900"><%= @approved_project.improvement_feedback %></dd>
-            </div>
-          <% end %>
-        </dl>
-      </div>
-
-      <!-- Other Projects -->
-      <% if @other_projects.any? %>
-        <div>
-          <h2 class="text-xl font-semibold mb-4">Other Projects by <%= @approved_project.first_name %></h2>
-          <div class="space-y-4">
-            <% @other_projects.each do |project| %>
-              <div class="border border-gray-200 rounded-lg p-4 hover:bg-gray-50">
-                <%= link_to new_ysws_approved_project_review_path(project), class: "block" do %>
-                  <h3 class="text-lg font-medium text-gray-900">
-                    <%= project.hours_spent %> hours
-                  </h3>
-                  <% if project.ysws_program %>
-                    <p class="text-sm text-gray-500">
-                      <%= project.ysws_program.name %>
-                    </p>
-                  <% end %>
+              <dt class="text-sm font-medium text-gray-500">Hours Spent</dt>
+              <dd class="mt-1 text-sm text-gray-900">
+                <%= @approved_project.hours_spent %>
+                <% if @approved_project.override_hours_spent.present? %>
+                  <br><span class="text-amber-600">Overridden: <%= @approved_project.override_hours_spent %></span>
                 <% end %>
+              </dd>
+            </div>
+
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Weighted Contribution</dt>
+              <dd class="mt-1 text-sm text-gray-900"><%= @approved_project.weighted_project_contribution %></dd>
+            </div>
+
+            <!-- Full width override justification if present -->
+            <% if @approved_project.override_hours_spent_justification.present? %>
+              <div class="md:col-span-2 bg-amber-50 p-4 rounded-md">
+                <dt class="text-sm font-medium text-amber-900">Hours Override Justification</dt>
+                <dd class="mt-1 text-sm text-amber-800 prose prose-amber prose-sm max-w-none">
+                  <%= markdown(@approved_project.override_hours_spent_justification) %>
+                </dd>
               </div>
             <% end %>
-          </div>
+
+            <!-- Rest of the fields -->
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Approved At</dt>
+              <dd class="mt-1 text-sm text-gray-900"><%= @approved_project.approved_at&.strftime("%B %d, %Y") %></dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">GitHub Username</dt>
+              <dd class="mt-1 text-sm text-gray-900">
+                <% if @approved_project.github_username.present? %>
+                  <a href="https://github.com/<%= @approved_project.github_username %>" 
+                     target="_blank" 
+                     rel="noopener noreferrer"
+                     class="inline-flex items-center text-gray-900 hover:text-gray-600">
+                    <svg class="w-4 h-4 mr-1" viewBox="0 0 24 24" fill="currentColor">
+                      <path fill-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clip-rule="evenodd" />
+                    </svg>
+                    <%= @approved_project.github_username %>
+                  </a>
+                <% else %>
+                  Not provided
+                <% end %>
+              </dd>
+            </div>
+          </dl>
         </div>
-      <% end %>
+
+        <!-- Author Fields -->
+        <div class="border-b border-gray-200 pb-8 mb-8">
+          <h2 class="text-xl font-semibold mb-4">Author Information</h2>
+          <dl class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Email</dt>
+              <dd class="mt-1 text-sm text-gray-900"><%= @approved_project.email %></dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Age When Approved</dt>
+              <dd class="mt-1 text-sm text-gray-900"><%= @approved_project.age_when_approved %></dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Location</dt>
+              <dd class="mt-1 text-sm text-gray-900">
+                <%= @approved_project.city %>, 
+                <%= @approved_project.state_province %>,
+                <%= @approved_project.country %>
+              </dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Birthday</dt>
+              <dd class="mt-1 text-sm text-gray-900"><%= @approved_project.birthday&.strftime("%B %d, %Y") %></dd>
+            </div>
+          </dl>
+        </div>
+
+        <!-- Feedback -->
+        <div class="border-b border-gray-200 pb-8 mb-8">
+          <h2 class="text-xl font-semibold mb-4">Feedback & Information</h2>
+          <dl class="grid grid-cols-1 gap-6">
+            <% if @approved_project.referral_reason.present? %>
+              <div>
+                <dt class="text-sm font-medium text-gray-500">Referral Reason</dt>
+                <dd class="mt-1 text-sm text-gray-900"><%= @approved_project.referral_reason %></dd>
+              </div>
+            <% end %>
+            
+            <% if @approved_project.heard_about.present? %>
+              <div>
+                <dt class="text-sm font-medium text-gray-500">How did you hear about this?</dt>
+                <dd class="mt-1 text-sm text-gray-900"><%= @approved_project.heard_about %></dd>
+              </div>
+            <% end %>
+
+            <% if @approved_project.doing_well_feedback.present? %>
+              <div>
+                <dt class="text-sm font-medium text-gray-500">What are we doing well?</dt>
+                <dd class="mt-1 text-sm text-gray-900"><%= @approved_project.doing_well_feedback %></dd>
+              </div>
+            <% end %>
+
+            <% if @approved_project.improvement_feedback.present? %>
+              <div>
+                <dt class="text-sm font-medium text-gray-500">How can we improve?</dt>
+                <dd class="mt-1 text-sm text-gray-900"><%= @approved_project.improvement_feedback %></dd>
+              </div>
+            <% end %>
+          </dl>
+        </div>
+
+        <!-- Other Projects -->
+        <% if @other_projects.any? %>
+          <div>
+            <h2 class="text-xl font-semibold mb-4">Other Projects by <%= @approved_project.first_name %></h2>
+            <div class="space-y-4">
+              <% @other_projects.each do |project| %>
+                <div class="border border-gray-200 rounded-lg p-4 hover:bg-gray-50">
+                  <%= link_to new_ysws_approved_project_review_path(project), class: "block" do %>
+                    <div class="flex justify-between items-start mb-2">
+                      <h3 class="text-lg font-medium text-gray-900">
+                        <%= project.hours_spent %> hours
+                        <% if project.ysws_program %>
+                          <span class="text-sm text-gray-500 ml-2">
+                            <%= project.ysws_program.name %>
+                          </span>
+                        <% end %>
+                      </h3>
+                      <div class="text-right">
+                        <div class="text-sm text-gray-500">
+                          <%= project.approved_at&.strftime("%B %d, %Y") %>
+                        </div>
+                        <div class="text-xs text-gray-400">
+                          (<%= time_ago_in_words(project.approved_at) %> ago)
+                        </div>
+                      </div>
+                    </div>
+                    <% if project.description.present? %>
+                      <div class="prose prose-sm prose-gray max-w-none line-clamp-2 text-gray-600">
+                        <%= preview_text(project.description, chars: 100) %>
+                      </div>
+                    <% end %>
+                  <% end %>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      </div>
     </div>
   </div>
 </div>
