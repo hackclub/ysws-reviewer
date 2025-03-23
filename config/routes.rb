@@ -14,17 +14,23 @@ Rails.application.routes.draw do
   get "/login", to: "sessions#new"
   delete "/logout", to: "sessions#destroy"
   
-  # Protected routes
-  get "/home", to: "home#index", as: :authenticated_root
-  
-  # Mount GoodJob dashboard with authentication
+  # Protected routes using custom constraint
   constraints lambda { |request|
     user_slack_id = request.session[:user_slack_id]
     user_slack_id.present? && AuthorizedUser.exists?(slack_user_id: user_slack_id)
   } do
+    get '/home', to: 'home#index', as: :authenticated_root
+    
+    # Mount GoodJob dashboard
     mount GoodJob::Engine => "/good_job"
+    
+    # YSWS routes
+    namespace :ysws do
+      post '/reload', to: 'reloads#create'
+      get '/reload_status', to: 'reloads#status'
+    end
   end
 
-  # Root route - will be handled by ApplicationController#authenticate_user!
+  # Root route for unauthenticated users
   root "sessions#new"
 end
