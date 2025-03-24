@@ -58,6 +58,14 @@ module Ysws
           # Get the program ID from the YSWS field (which is a link to the Programs table)
           program_id = fields["YSWS"]&.first
 
+          # Handle the Hours Spent field, which can be an array or a single value
+          hours = fields["Hours Spent"]
+          if hours.is_a?(Array)
+            hours = hours.first
+          else
+            hours = hours.to_i
+          end
+
           Ysws::ApprovedProject.create!(
             airtable_id: record["id"],
             email: fields["Email"],
@@ -77,7 +85,7 @@ module Ysws
             country: fields["Country"],
             postal_code: fields["ZIP / Postal Code"],
             birthday: fields["Birthday"],
-            hours_spent: fields["Hours Spent"].first,
+            hours_spent: hours,
             override_hours_spent: fields["Override Hours Spent"],
             override_hours_spent_justification: fields["Override Hours Spent Justification"],
             weighted_project_contribution: fields["YSWS–Weighted Project Contribution"],
