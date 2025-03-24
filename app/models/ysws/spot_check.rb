@@ -7,11 +7,14 @@ module Ysws
     validates :assessment, presence: true
     validates :notes, presence: true, if: :requires_notes?
     validates :reviewer_slack_id, presence: true
-    validates :airtable_id, presence: true
+    
+    # Don't validate presence of airtable_id during creation
+    validates :airtable_id, presence: true, unless: :new_record?
 
     enum :assessment, { red: 'red', yellow: 'yellow', green: 'green' }
 
-    before_validation :create_airtable_record, on: :create
+    # Create Airtable record after validation instead of before
+    after_create :create_airtable_record
 
     def requires_notes?
       %w[yellow red].include?(assessment)
