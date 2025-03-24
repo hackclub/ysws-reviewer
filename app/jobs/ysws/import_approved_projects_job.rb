@@ -77,7 +77,7 @@ module Ysws
             country: fields["Country"],
             postal_code: fields["ZIP / Postal Code"],
             birthday: fields["Birthday"],
-            hours_spent: fields["Hours Spent"],
+            hours_spent: fields["Hours Spent"].first,
             override_hours_spent: fields["Override Hours Spent"],
             override_hours_spent_justification: fields["Override Hours Spent Justification"],
             weighted_project_contribution: fields["YSWS–Weighted Project Contribution"],
