@@ -24,4 +24,20 @@ class AirtableService
     response = @client.get("#{BASE_URL}/#{@base_id}/#{table_id}", params: params)
     JSON.parse(response.body)
   end
+
+  def create_record(table_id, fields)
+    response = @client.post(
+      "#{BASE_URL}/#{@base_id}/#{table_id}",
+      json: { fields: fields }
+    )
+    parsed_response = JSON.parse(response.body)
+    
+    # Airtable returns { "records": [{ "id": "...", "createdTime": "...", "fields": {...} }] }
+    # or { "id": "...", "createdTime": "...", "fields": {...} }
+    if parsed_response["records"]
+      parsed_response["records"].first
+    else
+      parsed_response
+    end
+  end
 end 
