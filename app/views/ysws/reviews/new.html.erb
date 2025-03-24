@@ -134,7 +134,7 @@
                     <%= @approved_project.github_username %>
                   </a>
                 <% else %>
-                  Not provided
+                  <span class="italic text-gray-500">N/A</span>
                 <% end %>
               </dd>
             </div>
@@ -156,9 +156,22 @@
             <div>
               <dt class="text-sm font-medium text-gray-500">Location</dt>
               <dd class="mt-1 text-sm text-gray-900">
-                <%= @approved_project.city %>, 
-                <%= @approved_project.state_province %>,
-                <%= @approved_project.country %>
+                <% if @approved_project.address_line1.present? %>
+                  <div><%= @approved_project.address_line1 %></div>
+                <% end %>
+                <% if @approved_project.address_line2.present? %>
+                  <div><%= @approved_project.address_line2 %></div>
+                <% end %>
+                <div>
+                  <% location_parts = [] %>
+                  <% location_parts << @approved_project.city if @approved_project.city.present? %>
+                  <% location_parts << @approved_project.state_province if @approved_project.state_province.present? %>
+                  <% location_parts << @approved_project.postal_code if @approved_project.postal_code.present? %>
+                  <%= location_parts.join(", ") %>
+                </div>
+                <% if @approved_project.country.present? %>
+                  <div><%= @approved_project.country %></div>
+                <% end %>
               </dd>
             </div>
             <div>
