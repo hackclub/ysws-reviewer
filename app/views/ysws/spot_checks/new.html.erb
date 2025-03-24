@@ -35,20 +35,24 @@
         <div class="flex gap-4 mb-8">
           <% if @approved_project.playable_url.present? %>
             <a href="<%= @approved_project.playable_url %>" target="_blank" 
-               class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+               class="live-url-link inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+               data-url="<%= @approved_project.playable_url %>">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 mr-2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418" />
               </svg>
               Live URL
+              <span class="ml-2 text-xs opacity-70">d</span>
             </a>
           <% end %>
           <% if @approved_project.code_url.present? %>
             <a href="<%= @approved_project.code_url %>" target="_blank"
-               class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+               class="code-url-link inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+               data-url="<%= @approved_project.code_url %>">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 mr-2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5" />
               </svg>
               Code URL
+              <span class="ml-2 text-xs opacity-70">f</span>
             </a>
           <% end %>
         </div>
@@ -332,7 +336,7 @@
               <span class="text-sm text-gray-500">Required</span>
             </div>
             
-            <div class="space-y-2" id="assessment-options">
+            <div class="space-y-2" id="assessment-options" data-controller="assessment">
               <% 
                 # Define assessments with their display labels and styling
                 assessment_options = [
@@ -379,10 +383,15 @@
                       class: "hidden", 
                       id: "spot_check_assessment_#{option[:value]}",
                       checked: selected_assessment == option[:value],
-                      data: { action: "change->assessment#select" } %>
+                      data: { 
+                        assessment_target: "radio", 
+                        action: "change->assessment#select",
+                        value: option[:value]
+                      } %>
                   <label for="spot_check_assessment_<%= option[:value] %>" 
                       class="flex items-center cursor-pointer p-3 border rounded-lg hover:bg-gray-50 border-gray-300 <%= selected_assessment == option[:value] ? option[:bg_class] : '' %>"
-                      data-assessment-option="<%= option[:value] %>"
+                      data-assessment-target="option"
+                      data-value="<%= option[:value] %>"
                       data-bg-class="<%= option[:bg_class] %>">
                     <div class="<%= option[:icon_class] %> <%= option[:button_class] %> rounded-full p-2 mr-3 border border-current">
                       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
@@ -390,6 +399,17 @@
                       </svg>
                     </div>
                     <span class="text-sm font-medium text-gray-700"><%= option[:label] %></span>
+                    <% 
+                      shortcut_key = case option[:value]
+                        when 'green' then 'j'
+                        when 'yellow' then 'k'
+                        when 'red' then 'l'
+                        else nil
+                      end
+                    %>
+                    <% if shortcut_key %>
+                      <span class="ml-auto text-xs text-gray-500"><%= shortcut_key %></span>
+                    <% end %>
                   </label>
                 </div>
               <% end %>
@@ -399,7 +419,10 @@
           <div>
             <div class="flex items-center justify-between">
               <label for="notes" class="block text-sm font-medium text-gray-700">Notes for YSWS Authors</label>
-              <span class="text-sm text-gray-500">Required</span>
+              <span class="flex items-center">
+                <span class="text-sm text-gray-500 mr-2">Required</span>
+                <span class="text-xs text-gray-500">n</span>
+              </span>
             </div>
             <div class="mt-2">
               <%= f.text_area :notes,
@@ -412,6 +435,9 @@
           <div class="flex justify-end">
             <%= f.submit "Submit Spot Check",
                 class: "ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" %>
+            <span class="inline-flex items-center ml-2 text-xs text-gray-500">
+              <span class="js-shortcut-key" data-mac="⌘↩" data-win="Ctrl+↩"></span>
+            </span>
           </div>
         <% end %>
         
@@ -430,31 +456,226 @@
 </div>
 
 <script>
-  document.addEventListener('DOMContentLoaded', function() {
-    const radioButtons = document.querySelectorAll('input[name="spot_check[assessment]"]');
-    
-    radioButtons.forEach(radio => {
-      radio.addEventListener('change', function() {
-        // Reset all options
-        document.querySelectorAll('[data-assessment-option]').forEach(option => {
-          option.className = option.className.replace(/bg-\w+-\d+ border-\w+-\d+/g, '');
-          option.className = "flex items-center cursor-pointer p-3 border rounded-lg hover:bg-gray-50 border-gray-300";
-        });
-        
-        // Apply background to selected option
-        if (this.checked) {
-          const label = document.querySelector(`label[for="${this.id}"]`);
-          const bgClass = label.getAttribute('data-bg-class');
-          label.classList.add(...bgClass.split(' '));
+  // Create new Stimulus controller for assessment options (just for native behavior)
+  (() => {
+    // Create the controller if Stimulus is available - add proper existence checks
+    document.addEventListener('turbolinks:load', function() {
+      setTimeout(() => {
+        if (window.Stimulus && window.Stimulus.application) {
+          // Check if controller already exists to avoid double registration
+          try {
+            if (!window.Stimulus.application.controllers.find(c => c.identifier === 'assessment')) {
+              window.Stimulus.application.register('assessment', class extends window.Stimulus.Controller {
+                static targets = ['radio', 'option']
+                
+                connect() {
+                  // Initialize highlighting when controller connects
+                  const checked = this.radioTargets.find(radio => radio.checked)
+                  if (checked) {
+                    this.highlightSelected(checked)
+                  }
+                }
+                
+                select(event) {
+                  this.highlightSelected(event.target)
+                }
+                
+                highlightSelected(selectedRadio) {
+                  // Reset all options
+                  this.optionTargets.forEach(option => {
+                    option.className = option.className.replace(/bg-\w+-\d+ border-\w+-\d+/g, '')
+                    option.className = "flex items-center cursor-pointer p-3 border rounded-lg hover:bg-gray-50 border-gray-300"
+                  })
+                  
+                  // Apply background to selected option
+                  if (selectedRadio && selectedRadio.checked) {
+                    const value = selectedRadio.dataset.value
+                    const option = this.optionTargets.find(opt => opt.dataset.value === value)
+                    if (option) {
+                      const bgClass = option.dataset.bgClass
+                      if (bgClass) {
+                        option.classList.add(...bgClass.split(' '))
+                      }
+                    }
+                  }
+                }
+              })
+            }
+          } catch (error) {
+            console.log("Assessment controller already registered or Stimulus error:", error)
+          }
         }
-      });
-    });
-    
-    // Initialize with any preselected value
-    const preselected = document.querySelector('input[name="spot_check[assessment]"]:checked');
-    if (preselected) {
-      const event = new Event('change');
-      preselected.dispatchEvent(event);
+      }, 200) // Ensure Stimulus is ready
+    })
+  })()
+
+  // Define a function to manually handle the radio button selection
+  function selectRadioOption(color) {
+    // Function to update the visual state based on selection
+    function updateVisualState(radio) {
+      // Reset all options
+      document.querySelectorAll('[data-assessment-target="option"]').forEach(option => {
+        option.className = option.className.replace(/bg-\w+-\d+ border-\w+-\d+/g, '')
+        option.className = "flex items-center cursor-pointer p-3 border rounded-lg hover:bg-gray-50 border-gray-300"
+      })
+      
+      // Apply background to selected option
+      const label = document.querySelector(`label[for="${radio.id}"]`)
+      if (label) {
+        const bgClass = label.getAttribute('data-bg-class')
+        if (bgClass) {
+          label.classList.add(...bgClass.split(' '))
+        }
+      }
     }
-  });
+    
+    // Find the radio button
+    const radioId = `spot_check_assessment_${color}`
+    const radio = document.getElementById(radioId)
+    
+    if (radio) {
+      // Set it as checked
+      radio.checked = true
+      
+      // Update the visual state
+      updateVisualState(radio)
+      
+      return true
+    }
+    
+    return false
+  }
+
+  // Use a function that we can call both on initial load and on Turbolinks navigation
+  function initializeKeyboardShortcuts() {
+    // Clear any previous event listeners to prevent duplicates
+    document.removeEventListener('keydown', handleKeyDown)
+    
+    // Set up platform-specific shortcut indicators
+    const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0
+    document.querySelectorAll('.js-shortcut-key').forEach(el => {
+      el.textContent = isMac ? el.dataset.mac : el.dataset.win
+    })
+
+    // Add the keydown event listener
+    document.addEventListener('keydown', handleKeyDown)
+    
+    // Add a debug element to help with troubleshooting
+    if (document.getElementById('keyboard-debug-helper') === null) {
+      const debugElement = document.createElement('div')
+      debugElement.id = 'keyboard-debug-helper'
+      debugElement.style.position = 'fixed'
+      debugElement.style.bottom = '10px'
+      debugElement.style.right = '10px'
+      debugElement.style.padding = '10px'
+      debugElement.style.background = 'rgba(0,0,0,0.7)'
+      debugElement.style.color = 'white'
+      debugElement.style.borderRadius = '4px'
+      debugElement.style.zIndex = '9999'
+      debugElement.style.fontSize = '12px'
+      debugElement.style.display = 'none'
+      document.body.appendChild(debugElement)
+    }
+  }
+
+  function showDebug(message) {
+    const debugElement = document.getElementById('keyboard-debug-helper')
+    if (debugElement) {
+      debugElement.textContent = message
+      debugElement.style.display = 'block'
+      setTimeout(() => {
+        debugElement.style.display = 'none'
+      }, 3000)
+    }
+    console.log(message)
+  }
+
+  // Keyboard shortcut handler function
+  function handleKeyDown(e) {
+    // Prevent handling if focus is in a text field (except for cmd/ctrl combinations)
+    const isInputFocused = ['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName)
+    const isModifierKey = e.metaKey || e.ctrlKey
+    
+    if (isInputFocused && !isModifierKey) {
+      return
+    }
+
+    // Handle modifier key combinations first (these take precedence)
+    if (isModifierKey) {
+      if (e.key === 'Enter' || e.key === 'Return') {
+        // Submit the form
+        const submitButton = document.querySelector('form input[type="submit"]')
+        if (submitButton) {
+          submitButton.click()
+          e.preventDefault()
+        }
+        return
+      }
+    }
+
+    // Only process these shortcuts if not in a text field
+    if (!isInputFocused) {
+      // URL shortcuts
+      if (e.key === 'd') {
+        const liveUrlLink = document.querySelector('.live-url-link')
+        if (liveUrlLink && liveUrlLink.dataset.url) {
+          window.open(liveUrlLink.dataset.url, '_blank')
+          e.preventDefault()
+        }
+        return
+      } else if (e.key === 'f') {
+        const codeUrlLink = document.querySelector('.code-url-link')
+        if (codeUrlLink && codeUrlLink.dataset.url) {
+          window.open(codeUrlLink.dataset.url, '_blank')
+          e.preventDefault()
+        }
+        return
+      }
+      
+      // Assessment shortcuts (using our direct function)
+      if (e.key === 'j') {
+        if (selectRadioOption('green')) {
+          showDebug('Green selected via "j" key')
+          e.preventDefault()
+        } else {
+          showDebug('Could not find green option')
+        }
+      } else if (e.key === 'k') {
+        if (selectRadioOption('yellow')) {
+          showDebug('Yellow selected via "k" key')
+          e.preventDefault()
+        } else {
+          showDebug('Could not find yellow option')
+        }
+      } else if (e.key === 'l') {
+        if (selectRadioOption('red')) {
+          showDebug('Red selected via "l" key')
+          e.preventDefault()
+        } else {
+          showDebug('Could not find red option')
+        }
+      } else if (e.key === 'n') {
+        // Focus the notes field
+        const notesField = document.querySelector('#spot_check_notes')
+        if (notesField) {
+          notesField.focus()
+          e.preventDefault()
+        }
+      }
+    }
+  }
+
+  // Clean up event listeners when navigating away with Turbolinks
+  document.addEventListener('turbolinks:before-cache', function() {
+    document.removeEventListener('keydown', handleKeyDown)
+  })
+
+  // Initialize on first page load
+  document.addEventListener('DOMContentLoaded', initializeKeyboardShortcuts)
+  
+  // Re-initialize on Turbolinks page changes
+  document.addEventListener('turbolinks:load', function() {
+    // Make sure this runs after any framework initialization
+    setTimeout(initializeKeyboardShortcuts, 100)
+  })
 </script>
