@@ -1,17 +1,8 @@
 <div class="min-h-screen bg-gray-100">
-  <!-- Random Review Button -->
-  <div class="fixed top-4 right-4 sm:right-6 lg:right-8 z-10">
-    <%= link_to ysws_new_random_review_path, class: "inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2" do %>
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 mr-2">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
-      </svg>
-      Start Another Random Review
-    <% end %>
-  </div>
-
-  <div class="py-8">
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="bg-white rounded-lg shadow px-6 py-8">
+  <div class="flex flex-col md:flex-row py-8">
+    <!-- Left Column: Project Details (Scrollable) -->
+    <div class="flex-1 overflow-y-auto px-4 sm:px-6 lg:px-8 pb-8 md:pb-0">
+      <div class="bg-white rounded-lg shadow px-6 py-8 mb-8 md:mb-0">
         <!-- Header -->
         <div class="mb-8">
           <div class="flex justify-between items-start">
@@ -304,69 +295,166 @@
             </div>
           </div>
         <% end %>
+      </div>
+    </div>
 
-        <!-- Spot Check Form -->
-        <div class="border-t border-gray-200 pt-8">
-          <h2 class="text-xl font-semibold mb-6">Submit Spot Check</h2>
-          
-          <%= form_with url: ysws_approved_project_spot_checks_path(@approved_project), model: @spot_check, scope: :spot_check, local: true, class: "space-y-6" do |f| %>
-            <% if @spot_check.errors.any? %>
-              <div class="rounded-md bg-red-50 p-4">
-                <div class="flex">
-                  <div class="flex-shrink-0">
-                    <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
-                      <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
-                    </svg>
-                  </div>
-                  <div class="ml-3">
-                    <h3 class="text-sm font-medium text-red-800">
-                      <%= pluralize(@spot_check.errors.count, "error") %> prohibited this spot check from being saved:
-                    </h3>
-                    <div class="mt-2 text-sm text-red-700">
-                      <ul class="list-disc pl-5 space-y-1">
-                        <% @spot_check.errors.full_messages.each do |message| %>
-                          <li><%= message %></li>
-                        <% end %>
-                      </ul>
-                    </div>
+    <!-- Right Column: Spot Check Form (Sticky) -->
+    <aside class="w-full md:w-96 px-4 sm:px-6 lg:px-8 pt-8 md:pt-0">
+      <div class="bg-white rounded-lg shadow p-6 md:sticky md:top-8">
+        <%= form_with url: ysws_approved_project_spot_checks_path(@approved_project), model: @spot_check, scope: :spot_check, local: true, class: "space-y-6" do |f| %>
+          <% if @spot_check.errors.any? %>
+            <div class="rounded-md bg-red-50 p-4">
+              <div class="flex">
+                <div class="flex-shrink-0">
+                  <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                  </svg>
+                </div>
+                <div class="ml-3">
+                  <h3 class="text-sm font-medium text-red-800">
+                    <%= pluralize(@spot_check.errors.count, "error") %> prohibited this spot check from being saved:
+                  </h3>
+                  <div class="mt-2 text-sm text-red-700">
+                    <ul class="list-disc pl-5 space-y-1">
+                      <% @spot_check.errors.full_messages.each do |message| %>
+                        <li><%= message %></li>
+                      <% end %>
+                    </ul>
                   </div>
                 </div>
               </div>
-            <% end %>
-
-            <div>
-              <div class="flex items-center justify-between">
-                <label for="assessment" class="block text-sm font-medium text-gray-700">Assessment</label>
-                <span class="text-sm text-gray-500">Required</span>
-              </div>
-              <div class="mt-1">
-                <%= f.select :assessment, 
-                    Ysws::SpotCheck.assessments.keys.map { |k| [k.titleize, k] },
-                    { prompt: "Select an assessment" },
-                    class: "mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md" %>
-              </div>
             </div>
+          <% end %>
 
-            <div>
-              <div class="flex items-center justify-between">
-                <label for="notes" class="block text-sm font-medium text-gray-700">Notes for YSWS Authors</label>
-                <span class="text-sm text-gray-500">Required</span>
-              </div>
-              <div class="mt-1">
-                <%= f.text_area :notes,
-                    rows: 4,
-                    class: "shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md",
-                    placeholder: "Please provide detailed feedback about your assessment..." %>
-              </div>
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <label class="block text-sm font-medium text-gray-700">Assessment</label>
+              <span class="text-sm text-gray-500">Required</span>
             </div>
+            
+            <div class="space-y-2" id="assessment-options">
+              <% 
+                # Define assessments with their display labels and styling
+                assessment_options = [
+                  {
+                    value: 'green',
+                    label: 'Green - Looks Good!',
+                    bg_class: 'bg-green-50 border-green-300',
+                    icon_class: 'text-green-600',
+                    button_class: 'bg-green-100',
+                    icon_svg: '<path stroke-linecap="round" stroke-linejoin="round" d="M6.633 10.5c.806 0 1.533-.446 2.031-1.08a9.041 9.041 0 012.861-2.4c.723-.384 1.35-.956 1.653-1.715a4.498 4.498 0 00.322-1.672V3a.75.75 0 01.75-.75A2.25 2.25 0 0116.5 4.5c0 1.152-.26 2.243-.723 3.218-.266.558.107 1.282.725 1.282h3.126c1.026 0 1.945.694 2.054 1.715.045.422.068.85.068 1.285a11.95 11.95 0 01-2.649 7.521c-.388.482-.987.729-1.605.729H13.48c-.483 0-.964-.078-1.423-.23l-3.114-1.04a4.501 4.501 0 00-1.423-.23H5.904M14.25 9h2.25M5.904 18.75c.083.205.173.405.27.602.197.4-.078.898-.523.898h-.908c-.889 0-1.713-.518-1.972-1.368a12 12 0 01-.521-3.507c0-1.553.295-3.036.831-4.398C3.387 10.203 4.167 9.75 5 9.75h1.053c.472 0 .745.556.5.96a8.958 8.958 0 00-1.302 4.665c0 1.194.232 2.333.654 3.375z" />'
+                  },
+                  {
+                    value: 'yellow',
+                    label: 'Yellow - Needs Changes',
+                    bg_class: 'bg-yellow-50 border-yellow-300',
+                    icon_class: 'text-yellow-600',
+                    button_class: 'bg-yellow-100',
+                    icon_svg: '<path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />'
+                  },
+                  {
+                    value: 'red',
+                    label: 'Red - Remove From DB',
+                    bg_class: 'bg-red-50 border-red-300',
+                    icon_class: 'text-red-600',
+                    button_class: 'bg-red-100',
+                    icon_svg: '<path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />'
+                  }
+                ]
+                
+                # Map old assessment values to new ones for comparing with saved values
+                assessment_mapping = {
+                  'excellent' => 'green',
+                  'needs_improvement' => 'yellow',
+                  'rejected' => 'red'
+                }
+                
+                # Get the mapped value if the spot check has an old assessment value
+                selected_assessment = @spot_check.assessment.present? ? (assessment_mapping[@spot_check.assessment] || @spot_check.assessment) : nil
+                
+                assessment_options.each do |option|
+              %>
+                <div class="relative" data-selected="<%= selected_assessment == option[:value] %>">
+                  <%= f.radio_button :assessment, option[:value], 
+                      class: "hidden", 
+                      id: "spot_check_assessment_#{option[:value]}",
+                      checked: selected_assessment == option[:value],
+                      data: { action: "change->assessment#select" } %>
+                  <label for="spot_check_assessment_<%= option[:value] %>" 
+                      class="flex items-center cursor-pointer p-3 border rounded-lg hover:bg-gray-50 border-gray-300 <%= selected_assessment == option[:value] ? option[:bg_class] : '' %>"
+                      data-assessment-option="<%= option[:value] %>"
+                      data-bg-class="<%= option[:bg_class] %>">
+                    <div class="<%= option[:icon_class] %> <%= option[:button_class] %> rounded-full p-2 mr-3 border border-current">
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                        <%= option[:icon_svg].html_safe %>
+                      </svg>
+                    </div>
+                    <span class="text-sm font-medium text-gray-700"><%= option[:label] %></span>
+                  </label>
+                </div>
+              <% end %>
+            </div>
+          </div>
 
-            <div class="flex justify-end">
-              <%= f.submit "Submit Spot Check",
-                  class: "ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" %>
+          <div>
+            <div class="flex items-center justify-between">
+              <label for="notes" class="block text-sm font-medium text-gray-700">Notes for YSWS Authors</label>
+              <span class="text-sm text-gray-500">Required</span>
             </div>
+            <div class="mt-2">
+              <%= f.text_area :notes,
+                  rows: 5,
+                  class: "block w-full rounded-lg border-gray-300 bg-gray-50 p-3 text-sm text-gray-900 focus:border-indigo-500 focus:ring-indigo-500 focus:ring-2 shadow-sm transition duration-150 ease-in-out",
+                  placeholder: "Please provide detailed feedback about your assessment..." %>
+            </div>
+          </div>
+
+          <div class="flex justify-end">
+            <%= f.submit "Submit Spot Check",
+                class: "ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" %>
+          </div>
+        <% end %>
+        
+        <!-- Random Review Button (moved from top of page) -->
+        <div class="mt-6 pt-6 border-t border-gray-200">
+          <%= link_to ysws_new_random_review_path, class: "w-full inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2" do %>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
+            </svg>
+            Start Another Random Review
           <% end %>
         </div>
       </div>
-    </div>
+    </aside>
   </div>
 </div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const radioButtons = document.querySelectorAll('input[name="spot_check[assessment]"]');
+    
+    radioButtons.forEach(radio => {
+      radio.addEventListener('change', function() {
+        // Reset all options
+        document.querySelectorAll('[data-assessment-option]').forEach(option => {
+          option.className = option.className.replace(/bg-\w+-\d+ border-\w+-\d+/g, '');
+          option.className = "flex items-center cursor-pointer p-3 border rounded-lg hover:bg-gray-50 border-gray-300";
+        });
+        
+        // Apply background to selected option
+        if (this.checked) {
+          const label = document.querySelector(`label[for="${this.id}"]`);
+          const bgClass = label.getAttribute('data-bg-class');
+          label.classList.add(...bgClass.split(' '));
+        }
+      });
+    });
+    
+    // Initialize with any preselected value
+    const preselected = document.querySelector('input[name="spot_check[assessment]"]:checked');
+    if (preselected) {
+      const event = new Event('change');
+      preselected.dispatchEvent(event);
+    }
+  });
+</script>
