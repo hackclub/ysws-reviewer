@@ -13,6 +13,16 @@ module Ysws
 
     before_validation :create_airtable_record, on: :create
 
+    def self.assessment_from_airtable(value)
+      case value
+      when 'Green - Looks Good!' then 'green'
+      when "Yellow - Something's Wrong" then 'yellow'
+      when 'Red - Remove Project' then 'red'
+      else
+        raise ArgumentError, "Unknown Airtable assessment value: #{value}"
+      end
+    end
+
     private
 
     def airtable_assessment_value

@@ -8,6 +8,7 @@ module Ysws
       # Use a single transaction for the entire import to ensure consistency
       ActiveRecord::Base.transaction do
         # First delete all existing records to avoid foreign key conflicts
+        Ysws::SpotCheck.delete_all
         Ysws::ApprovedProject.delete_all
         Ysws::Program.delete_all
         
@@ -16,6 +17,9 @@ module Ysws
         
         # Then import projects with program associations
         import_projects(airtable)
+
+        # Finally import spot checks
+        import_spot_checks(airtable)
       end
     end
 
@@ -103,6 +107,37 @@ module Ysws
             archive_trigger_rearchive2: fields["Archive - Trigger Rearchive 2"],
             hack_clubber_geocoded_country: fields["Hack Clubber–Geocoded Country"],
             ysws_program_id: program_id
+          )
+        end
+
+        offset = response["offset"]
+        break unless offset
+      end
+    end
+
+    def import_spot_checks(airtable)
+      offset = nil
+      
+      # Process page by page
+      loop do
+        response = airtable.list_records(Rails.application.credentials.airtable.ysws.table_id.spot_checks, offset: offset)
+        
+        response["records"].each do |record|
+          fields = sanitize_fields(record["fields"])
+          
+          # Get the project ID from the Project field (which is a link to the Approved Projects table)
+          project_id = fields["Project"]&.first
+
+          next unless project_id # Skip if no project association
+
+          Ysws::SpotCheck.create!(
+            airtable_id: record["id"],
+            approved_project_id: project_id,
+            assessment: Ysws::SpotCheck.assessment_from_airtable(fields["Assessment"]),
+            notes: fields["Notes For YSWS Authors"],
+            reviewer_slack_id: fields["Reviewer Slack ID"],
+            created_at: fields["Created Time"],
+            updated_at: fields["Last Modified Time"]
           )
         end
 
