@@ -5,13 +5,17 @@ module Ysws
     belongs_to :approved_project, class_name: 'Ysws::ApprovedProject', foreign_key: :approved_project_id, primary_key: :airtable_id
 
     validates :assessment, presence: true
-    validates :notes, presence: true
+    validates :notes, presence: true, if: :requires_notes?
     validates :reviewer_slack_id, presence: true
     validates :airtable_id, presence: true
 
     enum :assessment, { red: 'red', yellow: 'yellow', green: 'green' }
 
     before_validation :create_airtable_record, on: :create
+
+    def requires_notes?
+      %w[yellow red].include?(assessment)
+    end
 
     def self.assessment_from_airtable(value)
       case value

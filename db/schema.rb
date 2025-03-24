@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_03_24_123822) do
+ActiveRecord::Schema[8.0].define(version: 2025_03_24_162838) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -168,7 +168,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_24_123822) do
   create_table "ysws_spot_checks", primary_key: "airtable_id", id: :string, force: :cascade do |t|
     t.string "approved_project_id", null: false
     t.string "assessment", null: false
-    t.text "notes", null: false
+    t.text "notes"
     t.string "reviewer_slack_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false

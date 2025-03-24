@@ -27,6 +27,7 @@ module Ysws
 
     def import_programs(airtable)
       offset = nil
+      records_to_insert = []
       
       # Process page by page
       loop do
@@ -34,23 +35,28 @@ module Ysws
         
         response["records"].each do |record|
           fields = sanitize_fields(record["fields"])
-          Ysws::Program.create!(
+          records_to_insert << {
             airtable_id: record["id"],
             name: fields["Name"],
             average_hours_per_grant: fields["Average Hours Per Grant"],
             nps_score: fields["NPS Score"],
             nps_median_estimated_hours: fields["NPS–Median Estimated Hours"],
-            icon_cdn_link: fields["Icon – CDN Link"]
-          )
+            icon_cdn_link: fields["Icon – CDN Link"],
+            created_at: Time.current,
+            updated_at: Time.current
+          }
         end
 
         offset = response["offset"]
         break unless offset
       end
+
+      Ysws::Program.insert_all!(records_to_insert) if records_to_insert.any?
     end
 
     def import_projects(airtable)
       offset = nil
+      records_to_insert = []
       
       # Process page by page
       loop do
@@ -70,7 +76,7 @@ module Ysws
             hours = hours.to_i
           end
 
-          Ysws::ApprovedProject.create!(
+          records_to_insert << {
             airtable_id: record["id"],
             email: fields["Email"],
             referral_reason: fields["Referral Reason"],
@@ -94,7 +100,7 @@ module Ysws
             override_hours_spent_justification: fields["Override Hours Spent Justification"],
             weighted_project_contribution: fields["YSWS–Weighted Project Contribution"],
             approved_at: fields["Approved At"],
-            created_at: fields["Created"],
+            created_at: fields["Created"] || Time.current,
             first_name: fields["First Name"],
             last_name: fields["Last Name"],
             weighted_project_contribution_per_author: fields["YSWS–Weighted Project Contribution Per Author"],
@@ -106,17 +112,21 @@ module Ysws
             archive_trigger_rearchive: fields["Archive - Trigger Rearchive"],
             archive_trigger_rearchive2: fields["Archive - Trigger Rearchive 2"],
             hack_clubber_geocoded_country: fields["Hack Clubber–Geocoded Country"],
-            ysws_program_id: program_id
-          )
+            ysws_program_id: program_id,
+            updated_at: Time.current
+          }
         end
 
         offset = response["offset"]
         break unless offset
       end
+
+      Ysws::ApprovedProject.insert_all!(records_to_insert) if records_to_insert.any?
     end
 
     def import_spot_checks(airtable)
       offset = nil
+      records_to_insert = []
       
       # Process page by page
       loop do
@@ -130,20 +140,22 @@ module Ysws
 
           next unless project_id # Skip if no project association
 
-          Ysws::SpotCheck.create!(
+          records_to_insert << {
             airtable_id: record["id"],
             approved_project_id: project_id,
             assessment: Ysws::SpotCheck.assessment_from_airtable(fields["Assessment"]),
             notes: fields["Notes For YSWS Authors"],
             reviewer_slack_id: fields["Reviewer Slack ID"],
-            created_at: fields["Created Time"],
-            updated_at: fields["Last Modified Time"]
-          )
+            created_at: fields["Created Time"] || Time.current,
+            updated_at: fields["Last Modified Time"] || Time.current
+          }
         end
 
         offset = response["offset"]
         break unless offset
       end
+
+      Ysws::SpotCheck.insert_all!(records_to_insert) if records_to_insert.any?
     end
 
     def sanitize_fields(fields)
