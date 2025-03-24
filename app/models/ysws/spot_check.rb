@@ -7,12 +7,15 @@ module Ysws
     validates :assessment, presence: true
     validates :notes, presence: true, if: :requires_notes?
     validates :reviewer_slack_id, presence: true
+    
+    # Skip airtable_id validation during creation
     validates :airtable_id, presence: true, on: :update
+    
+    # Use after_validation callback to create Airtable record only if validations pass
+    # but before actually saving to the database
+    after_validation :create_airtable_record, on: :create, if: -> { errors.empty? }
 
     enum :assessment, { red: 'red', yellow: 'yellow', green: 'green' }
-
-    # Create Airtable record before saving
-    before_validation :create_airtable_record, on: :create
 
     def requires_notes?
       %w[yellow red].include?(assessment)
