@@ -33,11 +33,18 @@
           <div class="sm:col-span-1">
             <dt class="text-sm font-medium text-gray-500">Timeframe</dt>
             <dd class="mt-1 text-sm text-gray-900">
-              <%= {
-                "24h" => "Last 24 hours",
-                "7d" => "Last 7 days",
-                "30d" => "Last 30 days"
-              }[@session.filters["timeframe"]] %>
+              <%= case @session.filters["timeframe"]
+                when "24h" then "Last 24 hours"
+                when "7d" then "Last 7 days"
+                when "30d" then "Last 30 days"
+                when "recent_100" then "Most recent 100 projects"
+                when "all" then "All time"
+                when "custom"
+                  start_date = @session.filters["start_date"].present? ? Date.parse(@session.filters["start_date"]).strftime("%b %d, %Y") : "?"
+                  end_date = @session.filters["end_date"].present? ? Date.parse(@session.filters["end_date"]).strftime("%b %d, %Y") : "?"
+                  "#{start_date} to #{end_date}"
+                else "Unknown timeframe"
+              end %>
             </dd>
           </div>
 
@@ -61,7 +68,7 @@
             <dt class="text-sm font-medium text-gray-500">Selected Programs</dt>
             <dd class="mt-1 text-sm text-gray-900">
               <div class="flex flex-wrap gap-2">
-                <% program_ids = @session.filters["ysws_program_ids"] %>
+                <% program_ids = @session.filters["ysws_program_ids"]&.reject(&:blank?) %>
                 <% if program_ids.present? %>
                   <% Ysws::Program.where(airtable_id: program_ids).each do |program| %>
                     <span class="inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800">
@@ -69,7 +76,9 @@
                     </span>
                   <% end %>
                 <% else %>
-                  <span class="text-gray-500">All programs</span>
+                  <span class="inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium bg-gray-100 text-gray-800">
+                    All programs
+                  </span>
                 <% end %>
               </div>
             </dd>

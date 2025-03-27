@@ -32,15 +32,36 @@
               <% end %>
 
               <div class="space-y-4">
-                <div>
+                <div data-controller="timeframe">
                   <%= f.label :timeframe, "Timeframe", class: "block text-sm font-medium text-gray-700" %>
                   <%= f.fields_for :filters do |ff| %>
                     <%= ff.select :timeframe, [
+                      ["All time", "all"],
+                      ["Most recent 100 projects", "recent_100"],
                       ["Last 24 hours", "24h"],
                       ["Last 7 days", "7d"],
-                      ["Last 30 days", "30d"]
-                    ], { include_blank: false }, 
-                       class: "mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md" %>
+                      ["Last 30 days", "30d"],
+                      ["Custom range", "custom"]
+                    ], { selected: "24h" }, 
+                       class: "mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md",
+                       data: { action: "change->timeframe#toggle" } %>
+
+                    <div data-timeframe-target="customRange" class="mt-4 hidden">
+                      <div class="grid grid-cols-2 gap-4">
+                        <div>
+                          <%= ff.label :start_date, "Start Date", class: "block text-sm font-medium text-gray-700" %>
+                          <%= ff.date_field :start_date, 
+                              class: "mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md",
+                              data: { timeframe_target: "dateInput" } %>
+                        </div>
+                        <div>
+                          <%= ff.label :end_date, "End Date", class: "block text-sm font-medium text-gray-700" %>
+                          <%= ff.date_field :end_date, 
+                              class: "mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md",
+                              data: { timeframe_target: "dateInput" } %>
+                        </div>
+                      </div>
+                    </div>
                   <% end %>
                   <p class="mt-2 text-sm text-gray-500">Choose the time period for projects to review</p>
                 </div>

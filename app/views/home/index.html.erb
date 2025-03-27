@@ -91,43 +91,77 @@
         <!-- Recent Spot Check Sessions -->
         <div class="bg-white shadow rounded-lg p-6">
           <h2 class="text-lg font-semibold text-gray-900 mb-4">Today's Spot Check Sessions</h2>
-          <div class="space-y-4">
+          <div class="space-y-6">
             <% if @recent_sessions.any? %>
               <% @recent_sessions.each do |session| %>
-                <div class="flex items-center justify-between bg-gray-50 p-4 rounded-lg">
-                  <div class="flex items-center space-x-4">
-                    <img src="<%= session.creator_avatar_url %>" alt="<%= session.creator_name %>" class="w-10 h-10 rounded-full">
-                    <div>
-                      <p class="font-medium text-gray-900"><%= session.creator_name %></p>
-                      <p class="text-sm text-gray-500"><%= time_ago_in_words(session.created_at) %> ago</p>
-                      <div class="mt-1 flex flex-wrap gap-2">
-                        <% if session.filters["timeframe"].present? %>
-                          <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
-                            <%= case session.filters["timeframe"]
-                                when "24h" then "Past 24 hours"
-                                when "7d" then "Past 7 days"
-                                when "30d" then "Past 30 days"
-                                end %>
-                          </span>
-                        <% end %>
-                        <% if session.sampling_strategy.present? %>
-                          <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-800">
-                            <%= session.sampling_strategy.humanize %>
-                          </span>
-                        <% end %>
-                        <% if session.filters["ysws_program_ids"].present? && session.filters["ysws_program_ids"].any? %>
-                          <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
-                            Limited to: <%= @ysws_programs.select { |p| session.filters["ysws_program_ids"].include?(p.airtable_id) }.map(&:name).join(", ") %>
-                          </span>
-                        <% end %>
+                <div class="bg-gray-50 rounded-lg p-6">
+                  <!-- Header -->
+                  <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center space-x-4">
+                      <img src="<%= session.creator_avatar_url %>" alt="<%= session.creator_name %>" class="w-10 h-10 rounded-full">
+                      <div>
+                        <p class="font-medium text-gray-900"><%= session.creator_name %></p>
+                        <p class="text-sm text-gray-500"><%= time_ago_in_words(session.created_at) %> ago</p>
                       </div>
                     </div>
+                    <div class="flex items-center space-x-2">
+                      <span class="<%= session.status == 'Completed' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800' %> px-2.5 py-0.5 rounded-full text-xs font-medium">
+                        <%= session.status %>
+                      </span>
+                      <%= link_to "Continue Review", ysws_spot_check_session_path(session), 
+                          class: "inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" %>
+                    </div>
                   </div>
-                  <%= link_to "Continue Review", ysws_spot_check_session_path(session), class: "inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" %>
+
+                  <!-- Stats Grid -->
+                  <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+                    <div class="bg-white rounded-lg p-4 border border-gray-200">
+                      <p class="text-sm text-gray-500">Completed</p>
+                      <p class="text-xl font-semibold text-gray-900"><%= session.completed_spot_checks_count %> checks</p>
+                    </div>
+                    <div class="bg-white rounded-lg p-4 border border-gray-200">
+                      <p class="text-sm text-gray-500">Remaining</p>
+                      <p class="text-xl font-semibold text-gray-900"><%= session.remaining_projects_count %> projects</p>
+                    </div>
+                    <div class="bg-white rounded-lg p-4 border border-gray-200">
+                      <p class="text-sm text-gray-500">Time Spent</p>
+                      <p class="text-xl font-semibold text-gray-900"><%= session.formatted_total_time %></p>
+                    </div>
+                    <div class="bg-white rounded-lg p-4 border border-gray-200">
+                      <p class="text-sm text-gray-500">Avg Time per Check</p>
+                      <p class="text-xl font-semibold text-gray-900">
+                        <% if session.completed_spot_checks_count > 0 %>
+                          <%= (session.total_time_spent / session.completed_spot_checks_count.to_f).round %> sec
+                        <% else %>
+                          -
+                        <% end %>
+                      </p>
+                    </div>
+                  </div>
+
+                  <!-- Filters -->
+                  <div class="bg-white rounded-lg p-4 border border-gray-200">
+                    <p class="text-sm text-gray-500 mb-2">Filters Applied</p>
+                    <p class="text-sm text-gray-900"><%= session.formatted_filters %></p>
+                  </div>
                 </div>
               <% end %>
             <% else %>
-              <p class="text-gray-500 text-center py-4">No spot check sessions today</p>
+              <div class="text-center py-8">
+                <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                </svg>
+                <h3 class="mt-2 text-sm font-medium text-gray-900">No spot check sessions today</h3>
+                <p class="mt-1 text-sm text-gray-500">Get started by creating a new spot check session.</p>
+                <div class="mt-6">
+                  <%= link_to new_ysws_spot_check_session_path, class: "inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" do %>
+                    <svg class="-ml-1 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                      <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+                    </svg>
+                    Start New Session
+                  <% end %>
+                </div>
+              </div>
             <% end %>
           </div>
         </div>

@@ -215,85 +215,29 @@
           <div class="mb-8">
             <h2 class="text-xl font-semibold mb-4">Other Projects by <%= @approved_project.first_name %></h2>
             
-            <% earlier_projects = @other_projects.select { |p| p.approved_at < @approved_project.approved_at } %>
-            <% later_projects = @other_projects.select { |p| p.approved_at > @approved_project.approved_at } %>
+            <% earlier_projects = @other_projects.select { |p| p.approved_at && @approved_project.approved_at && p.approved_at < @approved_project.approved_at } %>
+            <% later_projects = @other_projects.select { |p| p.approved_at && @approved_project.approved_at && p.approved_at > @approved_project.approved_at } %>
+            <% unknown_date_projects = @other_projects.select { |p| p.approved_at.nil? || @approved_project.approved_at.nil? } %>
 
             <div class="space-y-8">
               <% if earlier_projects.any? %>
                 <div>
-                  <h3 class="text-lg font-medium text-gray-900 mb-4 flex items-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 mr-2 text-gray-500">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3" />
-                    </svg>
-                    Earlier Projects
-                  </h3>
-                  <div class="space-y-4">
-                    <% earlier_projects.each do |project| %>
-                      <div class="border border-gray-200 rounded-lg p-4 hover:bg-gray-50">
-                        <%= link_to new_ysws_approved_project_spot_check_path(project), class: "block" do %>
-                          <div class="flex justify-between items-start mb-2">
-                            <h3 class="text-lg font-medium text-gray-900">
-                              <%= project.hours_spent %> hours
-                              <% if project.ysws_program %>
-                                <span class="text-sm text-gray-500 ml-2">
-                                  <%= project.ysws_program.name %>
-                                </span>
-                              <% end %>
-                            </h3>
-                            <div class="text-right">
-                              <div class="text-sm text-gray-500">
-                                <%= project.approved_at&.strftime("%B %d, %Y") %>
-                              </div>
-                            </div>
-                          </div>
-                          <% if project.description.present? %>
-                            <div class="text-sm text-gray-600">
-                              <%= truncate(project.description, length: 200) %>
-                            </div>
-                          <% end %>
-                        <% end %>
-                      </div>
-                    <% end %>
-                  </div>
+                  <h3 class="text-lg font-medium mb-2">Earlier Projects</h3>
+                  <%= render partial: "project_list", locals: { projects: earlier_projects } %>
                 </div>
               <% end %>
 
               <% if later_projects.any? %>
                 <div>
-                  <h3 class="text-lg font-medium text-gray-900 mb-4 flex items-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 mr-2 text-gray-500">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M15 15l6-6m0 0l-6-6m6 6H9a6 6 0 000 12h3" />
-                    </svg>
-                    Later Projects
-                  </h3>
-                  <div class="space-y-4">
-                    <% later_projects.each do |project| %>
-                      <div class="border border-gray-200 rounded-lg p-4 hover:bg-gray-50">
-                        <%= link_to new_ysws_approved_project_spot_check_path(project), class: "block" do %>
-                          <div class="flex justify-between items-start mb-2">
-                            <h3 class="text-lg font-medium text-gray-900">
-                              <%= project.hours_spent %> hours
-                              <% if project.ysws_program %>
-                                <span class="text-sm text-gray-500 ml-2">
-                                  <%= project.ysws_program.name %>
-                                </span>
-                              <% end %>
-                            </h3>
-                            <div class="text-right">
-                              <div class="text-sm text-gray-500">
-                                <%= project.approved_at&.strftime("%B %d, %Y") %>
-                              </div>
-                            </div>
-                          </div>
-                          <% if project.description.present? %>
-                            <div class="text-sm text-gray-600">
-                              <%= truncate(project.description, length: 200) %>
-                            </div>
-                          <% end %>
-                        <% end %>
-                      </div>
-                    <% end %>
-                  </div>
+                  <h3 class="text-lg font-medium mb-2">Later Projects</h3>
+                  <%= render partial: "project_list", locals: { projects: later_projects } %>
+                </div>
+              <% end %>
+
+              <% if unknown_date_projects.any? %>
+                <div>
+                  <h3 class="text-lg font-medium mb-2">Projects with Unknown Dates</h3>
+                  <%= render partial: "project_list", locals: { projects: unknown_date_projects } %>
                 </div>
               <% end %>
             </div>
