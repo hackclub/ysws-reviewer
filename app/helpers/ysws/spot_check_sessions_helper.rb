@@ -1,0 +1,2 @@
+module Ysws::SpotCheckSessionsHelper
+end

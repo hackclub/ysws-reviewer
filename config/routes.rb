@@ -1,5 +1,8 @@
 Rails.application.routes.draw do
   namespace :ysws do
+    get "spot_check_sessions/new"
+    get "spot_check_sessions/create"
+    get "spot_check_sessions/show"
     get "spot_checks/new"
   end
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
@@ -34,6 +37,7 @@ Rails.application.routes.draw do
       resource :reload, only: [:show, :create]
       
       get 'projects/spot_checks/new_random', to: 'spot_checks#new_random', as: :new_random_review
+      resources :spot_check_sessions, only: [:new, :create, :show]
       resources :approved_projects, only: [] do
         resources :spot_checks, only: [:new, :create]
       end

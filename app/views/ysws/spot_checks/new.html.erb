@@ -330,6 +330,11 @@
             </div>
           <% end %>
 
+          <%= f.hidden_field :start_time, value: Time.current %>
+          <% if @spot_check_session %>
+            <%= hidden_field_tag :spot_check_session_id, @spot_check_session.id %>
+          <% end %>
+
           <div>
             <div class="flex items-center justify-between mb-2">
               <label class="block text-sm font-medium text-gray-700">Assessment</label>

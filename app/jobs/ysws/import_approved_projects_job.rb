@@ -146,6 +146,11 @@ module Ysws
             assessment: Ysws::SpotCheck.assessment_from_airtable(fields["Assessment"]),
             notes: fields["Notes For YSWS Authors"],
             reviewer_slack_id: fields["Reviewer Slack ID"],
+            reviewer_name: fields["Reviewer Name"],
+            reviewer_email: fields["Reviewer Email"],
+            reviewer_avatar_url: fields["Reviewer Avatar URL"],
+            start_time: fields["Duration - Start Time"],
+            end_time: fields["Duration - End Time"],
             created_at: fields["Created Time"] || Time.current,
             updated_at: fields["Last Modified Time"] || Time.current
           }

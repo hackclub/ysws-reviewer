@@ -25,5 +25,19 @@ class HomeController < ApplicationController
       .where(job_class: ['Ysws::ImportApprovedProjectsJob', 'Ysws::ImportProgramsJob'])
       .where.not(finished_at: nil)
       .average("EXTRACT(epoch FROM finished_at - created_at)")
+
+    # Get spot check stats
+    @spot_checks_24h = Ysws::SpotCheck.where('created_at > ?', 24.hours.ago).count
+    @spot_checks_7d = Ysws::SpotCheck.where('created_at > ?', 7.days.ago).count
+
+    # Get today's spot check sessions in ET
+    et_timezone = ActiveSupport::TimeZone['Eastern Time (US & Canada)']
+    et_today_start = et_timezone.now.beginning_of_day.utc
+    et_today_end = et_timezone.now.end_of_day.utc
+
+    @recent_sessions = Ysws::SpotCheckSession
+      .where(created_at: et_today_start..et_today_end)
+      .order(created_at: :desc)
+      .limit(3)
   end
 end 
